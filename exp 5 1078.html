@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ex.05 — DOM &amp; Events | Electronics Emart</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    body {
+        background: #f0f4f8;
+        color: #1e293b;
+    }
+    /* NAVBAR */
+    nav {
+        background: #0f172a;
+        color: white;
+        padding: 18px 8%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+    nav h1 {
+        font-size: 24px;
+    }
+    nav ul {
+        list-style: none;
+        display: flex;
+        gap: 25px;
+    }
+    nav a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    nav a:hover {
+        color: #38bdf8;
+    }
+    /* HERO */
+    .hero {
+        min-height: 320px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        background: linear-gradient(135deg, #cbd5e1, #e2e8f0);
+        padding: 40px 20px;
+    }
+    .hero h2 {
+        font-size: 40px;
+        color: #0f172a;
+        margin-bottom: 15px;
+    }
+    .hero p {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+    .badge {
+        display: inline-block;
+        background: #0284c7;
+        color: white;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+    }
+    /* GENERAL */
+    .container {
+        width: 90%;
+        max-width: 1000px;
+        margin: auto;
+    }
+    section {
+        padding: 45px 0;
+    }
+    section h2 {
+        text-align: center;
+        color: #0f172a;
+        margin-bottom: 30px;
+        font-size: 28px;
+    }
+    /* TOOL CARDS */
+    .tool {
+        background: white;
+        padding: 25px;
+        margin-bottom: 25px;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px #cbd5e1;
+        border-left: 5px solid #0284c7;
+    }
+    .tool h3 {
+        color: #0f172a;
+        margin-bottom: 15px;
+    }
+    .tool p {
+        margin-bottom: 10px;
+    }
+    input[type="text"], select {
+        padding: 10px;
+        margin: 5px 5px 5px 0;
+        border: 1px solid #94a3b8;
+        border-radius: 5px;
+        background: #f8fafc;
+    }
+    input[type="text"]:focus, select:focus {
+        outline: none;
+        border-color: #0284c7;
+    }
+    .btn {
+        background: #0284c7;
+        color: white;
+        padding: 10px 22px;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: bold;
+    }
+    .btn:hover {
+        background: #0369a1;
+    }
+    .btn.reset {
+        background: #e2e8f0;
+        color: #1e293b;
+    }
+    .btn.reset:hover {
+        background: #cbd5e1;
+    }
+    .result {
+        margin-top: 12px;
+        font-weight: bold;
+        color: #0369a1;
+    }
+    /* STATION 1 - FINDING ELEMENTS */
+    #specimens p, #specimens span {
+        display: inline-block;
+        padding: 6px 12px;
+        margin: 4px;
+        background: #f1f5f9;
+        border-radius: 6px;
+        transition: background-color 0.3s ease;
+    }
+    .lit {
+        background: #7dd3fc !important;
+        box-shadow: 0 0 0 2px #0284c7;
+    }
+    /* STATION - INVENTORY GRID */
+    #garden {
+        margin-top: 15px;
+        text-align: center;
+    }
+    .plant-item {
+        display: inline-block;
+        font-size: 48px;
+        padding: 10px;
+        margin: 4px;
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+    /* STATION - TECH COIN FLIP */
+    #coin {
+        font-size: 60px;
+        margin: 15px;
+    }
+    /* EVENT CONSOLE */
+    #eventConsole {
+        position: fixed;
+        bottom: 0;
+        right: 20px;
+        width: 280px;
+        max-height: 220px;
+        background: #0f172a;
+        color: #38bdf8;
+        font-size: 12px;
+        font-family: monospace;
+        border-radius: 8px 8px 0 0;
+        box-shadow: 0 0 15px rgba(0,0,0,.3);
+        z-index: 2000;
+        overflow: hidden;
+    }
+    #eventConsole h4 {
+        background: #0284c7;
+        color: white;
+        padding: 8px 10px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    #consoleLog {
+        padding: 8px 10px;
+        max-height: 170px;
+        overflow-y: auto;
+    }
+    #consoleLog p {
+        margin-bottom: 3px;
+        border-bottom: 1px dashed #334155;
+        padding-bottom: 2px;
+    }
+    footer {
+        background: #0f172a;
+        color: white;
+        text-align: center;
+        padding: 22px;
+        margin-top: 20px;
+    }
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+        nav {
+            flex-direction: column;
+            gap: 12px;
+        }
+        .hero h2 {
+            font-size: 30px;
+        }
+        #eventConsole {
+            width: 90%;
+            right: 5%;
+        }
+    }
+</style>
+</head>
+<body>
+<!-- NAVIGATION -->
+<nav>
+    <h1>⚡ Electronics Emart</h1>
+    <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#tools">Tools</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+    <div>
+        <span class="badge">EX. NO 05 — DOM ELEMENTS &amp; EVENTS</span>
+        <h2>Next-Gen Tech at Your Fingertips</h2>
+        <p>Explore interactive JavaScript tools built for electronics management and customer support.</p>
+        <button class="btn" onclick="showMessage()">Explore Tools</button>
+        <p id="welcomeMessage" class="result"></p>
+    </div>
+</section>
+
+<section id="tools">
+    <div class="container">
+        <h2>Emart Interactive Toolbox</h2>
+        
+        <!-- STATION 1: FINDING ELEMENTS -->
+        <div class="tool">
+            <h3>1. Finding Elements — Selector Demo</h3>
+            <p>Each button highlights only the specimen elements returned by that selection method.</p>
+            <div id="specimens">
+                <p id="intro" class="intro">#intro (getElementById)</p>
+                <p class="intro">.intro paragraph (getElementsByClassName)</p>
+                <span>plain span 1</span>
+                <span>plain span 2</span>
+            </div>
+            <br>
+            <button class="btn" onclick="findById()">getElementById</button>
+            <button class="btn" onclick="findByTag()">getElementsByTagName</button>
+            <button class="btn" onclick="findByClass()">getElementsByClassName</button>
+            <button class="btn" onclick="findByQuery()">querySelectorAll</button>
+            <button class="btn reset" onclick="resetHighlight()">Reset</button>
+        </div>
+
+        <!-- STATION 2: WORD ANALYZER -->
+        <div class="tool">
+            <h3>2. Tech Slogan Analyzer</h3>
+            <p>Finds the shortest and longest word in an electronics brand slogan.</p>
+            <input type="text" id="craftName" value="Innovate Experience Power Performance">
+            <button class="btn" onclick="findWords()">Analyze</button>
+            <p class="result">Shortest: <span id="shortest"></span></p>
+            <p class="result">Longest: <span id="longest"></span></p>
+        </div>
+
+        <!-- STATION 3: BMI CALCULATOR -->
+        <div class="tool">
+            <h3>3. Customer BMI Calculator</h3>
+            <p>Calculate user Body Mass Index for ergonomics & smart fitness wearable profiling.</p>
+            <input type="text" id="weight" placeholder="Weight in kg">
+            <input type="text" id="height" placeholder="Height in meters">
+            <button class="btn" onclick="calculateBMI()">Calculate BMI</button>
+            <p class="result">BMI: <span id="score"></span></p>
+            <p class="result">Body Type: <span id="type"></span></p>
+        </div>
+
+        <!-- STATION 4: GARDEN GRID (INVENTORY GRID) -->
+        <div class="tool">
+            <h3>4. Inventory Display Generator</h3>
+            <p>Generate a warehouse grid with randomly allocated tech items (Laptops & Smartwatches).</p>
+            <input type="text" id="rows" placeholder="Rows">
+            <input type="text" id="columns" placeholder="Columns">
+            <button class="btn" onclick="grow()">Generate Grid</button>
+            <div id="garden"></div>
+        </div>
+
+        <!-- STATION 5: CURRENCY CONVERTER -->
+        <div class="tool">
+            <h3>5. Electronics Price Currency Converter</h3>
+            <input type="text" id="amount" placeholder="Enter amount">
+            <select id="from">
+                <option value="Indian Rupee">Indian Rupee</option>
+                <option value="US Dollar">US Dollar</option>
+            </select>
+            <span>to</span>
+            <select id="to">
+                <option value="US Dollar">US Dollar</option>
+                <option value="Indian Rupee">Indian Rupee</option>
+            </select>
+            <button class="btn" onclick="convert()">Convert</button>
+            <p class="result">Result: <span id="answer"></span></p>
+        </div>
+
+        <!-- STATION 6: SEED FLIP (GADGET PICKER FLIP) -->
+        <div class="tool">
+            <h3>6. Lucky Gadget Picker</h3>
+            <p>Flip to randomly decide which daily tech reward to feature (Phone vs Headphones).</p>
+            <div id="coin">📱</div>
+            <button class="btn" id="flip">Flip!</button>
+            <p class="result">Smartphone Total: <span id="num_heads">0</span></p>
+            <p class="result">Headphones Total: <span id="num_tails">0</span></p>
+        </div>
+
+        <!-- STATION 7: ECO STORE ORDER FORM (ELECTRONICS ORDER FORM) -->
+        <div class="tool">
+            <h3>7. Electronics Checkout Order Form</h3>
+            <p>Enter the quantity of each gadget you'd like to order.</p><br>
+            <label>Wireless Earbuds (₹100 each): </label>
+            <input type="text" id="small" value="0"><br>
+            <label>Smart Gaming Mouse (₹200 each): </label>
+            <input type="text" id="medium" value="0"><br>
+            <label>Mechanical Keyboard (₹400 each): </label>
+            <input type="text" id="large" value="0"><br><br>
+            <strong>Warranty/Tip:</strong>
+            <label><input type="radio" name="tip" value="10"> 10%</label>
+            <label><input type="radio" name="tip" value="15" checked> 15%</label>
+            <label><input type="radio" name="tip" value="20"> 20%</label>
+            <br><br>
+            <button class="btn" id="submit">Calculate Order</button>
+            <p class="result">Total Price: <span id="price"></span></p>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+    <div class="container">
+        <h2>Contact Us</h2>
+        <div class="tool">
+            <p>📧 Email: support@electronicsemart.com</p>
+            <p>📞 Phone: +91 98765 43210</p>
+            <p>📍 Tech Park, Coimbatore, Tamil Nadu</p>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>&copy; 2026 Electronics Emart. All Rights Reserved.</p>
+    <p>Powering your tech world, one click at a time ⚡</p>
+</footer>
+
+<!-- FLOATING EVENT CONSOLE -->
+<div id="eventConsole">
+    <h4 onclick="toggleConsole()">🖥️ Event Console (click to toggle)</h4>
+    <div id="consoleLog"></div>
+</div>
+
+<script>
+    /* =====================================
+       EVENT CONSOLE
+       ===================================== */
+    function logEvent(msg) {
+        var log = document.getElementById("consoleLog");
+        var time = new Date().toLocaleTimeString();
+        var entry = document.createElement("p");
+        entry.textContent = "[" + time + "] " + msg;
+        log.prepend(entry);
+    }
+    function toggleConsole() {
+        var log = document.getElementById("consoleLog");
+        log.style.display = (log.style.display === "none") ? "block" : "none";
+    }
+    document.addEventListener("click", function (e) {
+        logEvent("click on <" + e.target.tagName.toLowerCase() + ">");
+    });
+    window.addEventListener("load", function () {
+        logEvent("window loaded");
+    });
+    window.addEventListener("resize", function () {
+        logEvent("window resized");
+    });
+
+    /* =====================================
+       WELCOME MESSAGE
+       ===================================== */
+    function showMessage() {
+        document.getElementById("welcomeMessage").innerHTML =
+            "⚡ Welcome to Electronics Emart — Powering your digital lifestyle!";
+    }
+
+    /* =====================================
+       1. FINDING ELEMENTS
+       ===================================== */
+    function resetHighlight() {
+        document.querySelectorAll("#specimens .lit").forEach(function (el) {
+            el.classList.remove("lit");
+        });
+    }
+    function findById() {
+        resetHighlight();
+        document.getElementById("intro").classList.add("lit");
+    }
+    function findByTag() {
+        resetHighlight();
+        var spans = document.getElementsByTagName("span");
+        for (var i = 0; i < spans.length; i++) {
+            spans[i].classList.add("lit");
+        }
+    }
+    function findByClass() {
+        resetHighlight();
+        var items = document.getElementsByClassName("intro");
+        for (var i = 0; i < items.length; i++) {
+            items[i].classList.add("lit");
+        }
+    }
+    function findByQuery() {
+        resetHighlight();
+        var items = document.querySelectorAll("#specimens p.intro");
+        items.forEach(function (el) {
+            el.classList.add("lit");
+        });
+    }
+
+    /* =====================================
+       2. SHORTEST AND LONGEST WORD
+       ===================================== */
+    function findWords() {
+        var str = document.getElementById("craftName").value;
+        var words = str.split(" ");
+        var shortest = words[0];
+        var longest = words[0];
+        for (var i = 1; i < words.length; i++) {
+            if (words[i].length < shortest.length) {
+                shortest = words[i];
+            }
+            if (words[i].length > longest.length) {
+                longest = words[i];
+            }
+        }
+        document.getElementById("shortest").innerHTML = shortest;
+        document.getElementById("longest").innerHTML = longest;
+    }
+
+    /* =====================================
+       3. BMI CALCULATOR
+       ===================================== */
+    function calculateBMI() {
+        var weight = parseFloat(document.getElementById("weight").value);
+        var height = parseFloat(document.getElementById("height").value);
+        var bmi = weight / (height * height);
+        document.getElementById("score").innerHTML = bmi.toFixed(2);
+        var type;
+        if (bmi < 18) {
+            type = "Underweight";
+        } else if (bmi < 25) {
+            type = "Normal";
+        } else if (bmi < 30) {
+            type = "Overweight";
+        } else {
+            type = "Obese";
+        }
+        document.getElementById("type").innerHTML = type;
+    }
+
+    /* =====================================
+       4. INVENTORY GRID
+       ===================================== */
+    function grow() {
+        var rows = parseInt(document.getElementById("rows").value);
+        var columns = parseInt(document.getElementById("columns").value);
+        var plants = ["💻", "⌚"];
+        var garden = document.getElementById("garden");
+        garden.innerHTML = "";
+        for (var i = 0; i < rows; i++) {
+            for (var j = 0; j < columns; j++) {
+                var number = Math.floor(Math.random() * 2);
+                garden.innerHTML +=
+                    "<span class='plant-item'>" + plants[number] + "</span>";
+            }
+            garden.innerHTML += "<br>";
+        }
+    }
+
+    /* =====================================
+       5. CURRENCY CONVERTER
+       ===================================== */
+    function convert() {
+        var amount = parseFloat(document.getElementById("amount").value);
+        var fromSelect = document.getElementById("from");
+        var toSelect = document.getElementById("to");
+        var from = fromSelect[fromSelect.selectedIndex].value;
+        var to = toSelect[toSelect.selectedIndex].value;
+        var answer;
+        if (from === "Indian Rupee" && to === "US Dollar") {
+            answer = amount * 0.015;
+        } else if (from === "US Dollar" && to === "Indian Rupee") {
+            answer = amount * 67.12;
+        } else {
+            answer = amount;
+        }
+        document.getElementById("answer").innerHTML = answer.toFixed(2);
+    }
+
+    /* =====================================
+       6. LUCKY GADGET FLIP
+       ===================================== */
+    var heads = 0;
+    var tails = 0;
+    document.getElementById("flip").addEventListener("click", flipFunction);
+    function flipFunction() {
+        var number = Math.floor(Math.random() * 2);
+        if (number === 0) {
+            document.getElementById("coin").innerHTML = "📱";
+            heads++;
+        } else {
+            document.getElementById("coin").innerHTML = "🎧";
+            tails++;
+        }
+        document.getElementById("num_heads").innerHTML = heads;
+        document.getElementById("num_tails").innerHTML = tails;
+    }
+
+    /* =====================================
+       7. ELECTRONICS ORDER CALCULATOR
+       ===================================== */
+    document.getElementById("submit").addEventListener("click", calculateOrder);
+    function calculateOrder() {
+        var bottle = parseInt(document.getElementById("small").value);
+        var compost = parseInt(document.getElementById("medium").value);
+        var lantern = parseInt(document.getElementById("large").value);
+        var tip = parseFloat(
+            document.querySelector('input[name="tip"]:checked').value
+        );
+        /*
+            Product prices
+            Wireless Earbuds    = ₹100
+            Smart Gaming Mouse  = ₹200
+            Mechanical Keyboard = ₹400
+        */
+        var subtotal = (bottle * 100) + (compost * 200) + (lantern * 400);
+        var tax = subtotal * 0.09;
+        var tipAmount = subtotal * (tip / 100);
+        var finalPrice = subtotal + tax + tipAmount;
+        document.getElementById("price").innerHTML = "₹" + finalPrice.toFixed(2);
+    }
+</script>
+</body>
+</html>
